@@ -6,7 +6,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 app.use(cors());
-
+app.use(express.json());
 const PORT = process.env.PORT || 3001;
 
 app.get('/test', (request, response) => {
@@ -15,7 +15,15 @@ app.get('/test', (request, response) => {
 
 })
 
+
+// routes method
+
 app.get('/books',handleBook);
+app.post('/books',creatNewBook);
+app.delete('/books/:_id',deleteBook);
+app.put('/books/:_id',updatBook);
+
+
 
 function handleBook(req,res){
 
@@ -27,7 +35,7 @@ else res.send(data);
 }
 
 
-mongoose.connect('mongodb://127.0.0.1:27017/catsDB');
+mongoose.connect('mongodb+srv://qais-alsgher:qais123@cluster0.evdbsxk.mongodb.net/?retryWrites=true&w=majority');
 
 const bookSchema= new mongoose.Schema({
 
@@ -39,6 +47,38 @@ const bookSchema= new mongoose.Schema({
 
 const bookModel=mongoose.model('bookModel',bookSchema);
 
+//creat new book from post 
+function creatNewBook(req,res){
+
+const {newBook}= req.body;
+// console.log(newBook);
+const book =new bookModel(newBook);
+book.save();
+res.status(201).json(book);
+
+}
+// delet book form delet method 
+function deleteBook(req,res){
+  const bookId =req.params._id;
+  bookModel.findByIdAndDelete(bookId).then(record=>{
+    res.send(record);
+  }).catch(error=>{
+    res.status(500).send(error.message);
+  })
+}
+// update data from put
+function updatBook(req,res){
+const bookId=req.params._id;
+const {dataUpdat}=req.body;
+
+bookModel.findByIdAndUpdate(bookId,dataUpdat,{new:true}).then(record=>{
+  res.send(record);
+}).catch(error=>{
+  res.status(500).send(error.message);
+})
+}
+
+// creat books locale
 const cleanCode= new bookModel({
 
 title:'Clean Code',
