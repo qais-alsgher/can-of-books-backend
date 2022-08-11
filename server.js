@@ -18,87 +18,90 @@ app.get('/test', (request, response) => {
 
 // routes method
 
-app.get('/books',handleBook);
-app.post('/books',creatNewBook);
-app.delete('/books/:_id',deleteBook);
-app.put('/books/:_id',updatBook);
+app.get('/books', handleBook);
+app.post('/books', creatNewBook);
+app.delete('/books/:_id', deleteBook);
+app.put('/books/:_id', updatBook);
 
 
 
-function handleBook(req,res){
+function handleBook(req, res) {
 
-bookModel.find({},(error,data)=>{
-if(error)console.log('reading from db ${error}')
-else res.send(data);
+  bookModel.find({}, (error, data) => {
+    if (error) console.log('reading from db ${error}')
+    else res.send(data);
+  }
+  )
 }
-)
-}
 
 
-mongoose.connect('mongodb+srv://qais-alsgher:qais123@cluster0.evdbsxk.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://qais-alsgher:qais123@cluster0.evdbsxk.mongodb.net/?retryWrites=true&w=majority',
+  {
+    useUnifiedTopology: true
+  });
 
-const bookSchema= new mongoose.Schema({
+const bookSchema = new mongoose.Schema({
 
-  title:String,
-  description:String,
-  status:String
+  title: String,
+  description: String,
+  status: String
 
 })
 
-const bookModel=mongoose.model('bookModel',bookSchema);
+const bookModel = mongoose.model('bookModel', bookSchema);
 
 //creat new book from post 
-function creatNewBook(req,res){
+function creatNewBook(req, res) {
 
-const {newBook}= req.body;
-// console.log(newBook);
-const book =new bookModel(newBook);
-book.save();
-res.status(201).json(book);
+  const { newBook } = req.body;
+  // console.log(newBook);
+  const book = new bookModel(newBook);
+  book.save();
+  res.status(201).json(book);
 
 }
 // delet book form delet method 
-function deleteBook(req,res){
-  const bookId =req.params._id;
-  bookModel.findByIdAndDelete(bookId).then(record=>{
+function deleteBook(req, res) {
+  const bookId = req.params._id;
+  bookModel.findByIdAndDelete(bookId).then(record => {
     res.send(record);
-  }).catch(error=>{
+  }).catch(error => {
     res.status(500).send(error.message);
   })
 }
 // update data from put
-function updatBook(req,res){
-const bookId=req.params._id;
-const {dataUpdat}=req.body;
+function updatBook(req, res) {
+  const bookId = req.params._id;
+  const { dataUpdat } = req.body;
 
-bookModel.findByIdAndUpdate(bookId,dataUpdat,{new:true}).then(record=>{
-  res.send(record);
-}).catch(error=>{
-  res.status(500).send(error.message);
-})
+  bookModel.findByIdAndUpdate(bookId, dataUpdat, { new: true }).then(record => {
+    res.send(record);
+  }).catch(error => {
+    res.status(500).send(error.message);
+  })
 }
 
 // creat books locale
-const cleanCode= new bookModel({
+const cleanCode = new bookModel({
 
-title:'Clean Code',
-description:'A Handbook of Agile Software Craftsmanship',
-status:'good'
+  title: 'Clean Code',
+  description: 'A Handbook of Agile Software Craftsmanship',
+  status: 'good'
 
 });
-const codeWhite= new bookModel({
+const codeWhite = new bookModel({
 
-title:'Code White',
-description:' Sounding the Alarm on Violence Against Healthcare Workers',
-status:'mormal'
+  title: 'Code White',
+  description: ' Sounding the Alarm on Violence Against Healthcare Workers',
+  status: 'mormal'
 });
 
 
-const secretCode=new bookModel({
+const secretCode = new bookModel({
 
-  title:'Secret Code Book',
-  description:'The Secret Code Book is a short introduction to substitution ciphers',
-  status:'good'
+  title: 'Secret Code Book',
+  description: 'The Secret Code Book is a short introduction to substitution ciphers',
+  status: 'good'
 });
 
 cleanCode.save();
